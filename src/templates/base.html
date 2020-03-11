@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{%load static%}
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+  <title>AdminLTE 3 | Dashboard 3</title>
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="{% static 'plugins/fontawesome-free/css/all.min.css' %}">
+  <!-- IonIcons -->
+  <link rel="stylesheet" href="http://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+
+  {% block links%}
+  {%endblock%}
+
+  <!-- Theme style -->
+  <link rel="stylesheet" href="{% static 'dist/css/adminlte.min.css' %}">
+  <!-- Google Font: Source Sans Pro -->
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+</head>
+<!--
+BODY TAG OPTIONS:
+=================
+Apply one or more of the following classes to to the body tag
+to get the desired effect
+|---------------------------------------------------------|
+|LAYOUT OPTIONS | sidebar-collapse                        |
+|               | sidebar-mini                            |
+|---------------------------------------------------------|
+-->
+<body class="hold-transition sidebar-mini">
+<div class="wrapper">
+  <!-- Navbar -->
+{% include "nav_header.html" %}
+  <!-- /.navbar -->
+
+  <!-- Main Sidebar Container -->
+{% include "navbar_left.html" %}
+  <!-- Content Wrapper. Contains page content -->
+ {% block content %}
+ {% endblock%}
+  <!-- /.content-wrapper -->
+
+  <!-- Control Sidebar -->
+  <aside class="control-sidebar control-sidebar-dark">
+    <!-- Control sidebar content goes here -->
+  </aside>
+  <!-- /.control-sidebar -->
+
+  <!-- Main Footer -->
+ {% include "footer.html" %}
+</div>
+<!-- ./wrapper -->
+
+<!-- REQUIRED SCRIPTS -->
+
+<!-- jQuery -->
+<script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+<!-- Bootstrap -->
+<script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+{% block js_scripts%}
+{% endblock %}
+<!-- AdminLTE -->
+<script src="{% static 'dist/js/adminlte.js' %}"></script>
+
+<!-- OPTIONAL SCRIPTS -->
+<script src="{% static 'plugins/chart.js/Chart.min.js' %}"></script>
+<script src="{% static 'dist/js/demo.js' %}"></script>
+<script src="{% static 'dist/js/pages/dashboard3.js' %}"></script>
+
+
+</body>
+</html>
+
