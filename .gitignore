@@ -1,0 +1,13 @@
+*.xlsx
+*.csv
+*.xlrb
+*.xls
+*.png
+*.jpg
+*.jpeg
+*.sqlite3
+*.css
+*.js
+*.min
+*.json
+static/

@@ -1,0 +1,250 @@
+{% extends 'base.html' %}
+{% block title%}
+  <title>File Action</title>
+{% endblock %}
+{% block content %}
+
+
+{% if file_name != 'None' %}
+
+<h3>File Name: </h3><p>{{file_name}}</p>
+
+{% endif %}
+
+{% if file_name != 'None' %}
+
+<div class="row">
+	<div class="col-md-6">
+		<form  method="post"> {% csrf_token %}
+			
+			<div class="form-group">
+				<label for="exampleInputEmail1">Select Database</label>
+				<select class="form-control" name="_table_name_list" required="">
+
+					{% for table_name in dbTables %}
+					<option value="{{table_name}}">{{table_name|title }}</option>
+
+					{% endfor %}
+
+				</select>
+				<small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+			</div>
+
+			<div class="form-check">
+				<input type="hidden" class="form-control" name="_file_path_insert" value="{{file_path_again}}">
+			</div>
+
+
+			<input type="submit" class="btn btn-outline-primary" data-toggle="tooltip" data-placement="top" title="Add Data" value="Insert Data" name="_insert">
+
+
+			
+		</form>
+
+	</div>
+	<div class="col-md-6">
+		<!-- <form  method="post" hidden=""> {% csrf_token %}
+			<div class="form-col">
+				<div class="col-3">
+
+					<select class="custom-select" name="_table_name_list" required="">
+						<option selected>Select Database</option>
+
+						{% for table_name in dbTables %}
+						<option value="{{table_name}}">{{table_name}}</option>
+
+						{% endfor %}
+
+					</select>
+				</div>
+
+				<div class="col-3">
+					<select class="custom-select" name="_table_name_list" required="">
+						<option selected>Select Month - Year</option>
+
+						{% for table_name in dbTables %}
+						<option value="{{table_name}}">{{table_name}}</option>
+
+						{% endfor %}
+
+					</select>
+
+
+
+				</div>
+
+
+				<input type="hidden" class="form-control" name="_file_path_insert" value="{{file_path_again}}">
+
+				<div class="col-3">
+					<input type="submit" class="btn btn-outline-success" value="Update Data" name="_update">
+				</div>
+
+				<div class="col-3">
+					<input type="submit" class="btn btn-outline-danger" value="Delete File" name="_delete">
+				</div>
+
+			</div>
+		</form> -->
+
+		<form method="post"> {% csrf_token %}
+			<div class="form-group">
+				<label for="exampleInputEmail1">Select Database</label>
+				<select class="form-control" name="_table_name_list" required="">
+
+					{% for table_name in dbTables %}
+					<option value="{{table_name}}">{{table_name|title }}</option>
+
+					{% endfor %}
+
+				</select>
+				<small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+			</div>
+
+			<div class="form-group">
+				<input type="month" class="form-control" name="_select_month" value="month">
+			</div>
+
+			<div class="form-check">
+				<input type="hidden" class="form-control" name="_file_path_update" value="{{file_path_again}}">
+			</div>
+			<input type="submit" class="btn btn-outline-success" value="Update Data" name="_update">
+			<!-- <input type="submit" class="btn btn-outline-danger" value="Delete File" name="_delete"> -->
+		</form>
+
+
+	</div>
+
+</div>
+
+
+<br>
+<br>
+
+<form  method="post"> {% csrf_token %}
+	<div class="form-row">
+		<div class="col-16">
+
+			<!-- Contains File Path -->
+			<!-- {{file_path_again}} -->
+			<input type="hidden" class="form-control" name="_file_path", value="{{file_path_again}}">
+			<!-- Text Field -> Contain table Name -->
+			<input type="text" aria-label="First name" class="form-control" name="_newtable" required=""
+			pattern="[A-Za-z]{4,15}" title="Should Only Contain Characters of Length 4-15">
+			<br>
+			<input type="submit" class="btn btn-primary btn-lg btn-block" name="_newdb" value="Create New Database">
+		</div>
+
+	</div>
+
+</form>
+{%  endif %}<!-- end if file_name != 'None' -->
+
+{% if exists %}
+<div class="alert alert-danger" role="alert">
+	{{exists}}
+</div>
+
+{% endif %} <!-- end if table exists -->
+
+{% if dbTables %}
+<br>
+<br>
+
+<div class="row">
+	<div class="column" >
+
+		<div class="col-12" >
+
+			{% if file_columns %}
+			<h2 class="display-5">Summary of Uploaded File</h2>
+
+			<table class="table table-hover">
+				<thead class="thead">
+					<tr class="table-warning">
+
+
+						<th scope="col">Column Name</th>
+						<th scope="col">Data Type</th>
+					</tr>
+				</thead>
+				<tbody>
+
+
+
+					{% for k,v in file_columns.items %}
+					<tr class="table-secondary">
+						<td>{{k}}</td>
+						<td>{{v}} {{loop.counter}}</td>
+					</tr>
+
+
+					{% endfor %}
+				</tbody>
+			</table>
+			{% endif %} 
+			<!-- end if file_columns -->
+
+		</div>
+	</div>
+
+
+	<div class="column">
+		
+
+
+
+
+		<!-- <li> {{ dbTables.MyGuests.keys }}</li> -->
+
+		{% for tabledata, j in dbTables.items %}
+		<div class="col-12">
+
+			<h1 class="display-5">{{tabledata.capitalize}}</h1>
+
+
+			<table class="table">
+				<thead class="thead-dark">
+					<tr>
+
+						<th scope="col">Column Name</th>
+						<th scope="col">Data Type</th>
+
+					</tr>
+				</thead>
+				<tbody>
+
+
+					<!-- {{dbTables}}	 -->
+					{% for k,v in j.items %}
+
+					{{col_data.items}}
+					<tr>
+
+						<td>{{k}}</td>
+						<td>{{v}}</td>
+
+					</tr>
+
+					{% endfor  %}
+				</tbody>
+			</table>
+			<br>
+			<br>
+		</div>
+		{% endfor %}
+
+		
+
+		
+
+	</div>
+
+	
+</div>
+
+{% endif %}	<!-- end if dbTables -->
+{% if action %}
+{{action}}
+{% endif %}
+{% endblock %}

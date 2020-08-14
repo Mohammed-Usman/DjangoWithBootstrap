@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% block title%}
+<title>Upload File</title>
+{% endblock %}
+{% block content %}
+
+
+<div class="col-12 mx-auto">
+  <form method="post" enctype="multipart/form-data"> {% csrf_token %}
+    <div class="form-group">
+      <label for="exampleFormControlFile1">File Input</label>
+      <input type="file" class="form-control-file" name="document" required="" >
+      <br>
+      <input type="submit" name="file_uploads" value="Upload File">
+    </div>
+  </form>
+
+  {% if context %}
+  <br>
+<h3>{{file_name}}</h3>
+<br>
+  <form method="post">  {% csrf_token %}
+    <select class="custom-select" name="_table_name_list" required="">
+
+      {% for k in dt_dict.keys %}
+
+      <option value="{{k}}">{{k}}</option>
+
+      {%endfor%}
+
+    </select> 
+    
+
+    <select class="custom-select" name="_date_format_list" required="">
+
+      <option value="%d/%m/%Y">DD/MM/YYYY</option>
+      <option value="%m/%d/%Y">MM/DD/YYYY</option>
+      <option value="%d-%m-%Y">DD-MM-YYYY</option>
+      <option value="%m-%d-%Y">MM-DD-YYYY</option>
+      
+      <option value="%d/%m/%Y %H:%M:%S">DD/MM/YYYY hh:mm:ss</option>
+      <option value="%m/%d/%Y %H:%M:%S">MM/DD/YYYY hh:mm:ss</option>
+      <option value="%d/%m/%Y %H:%M:%S %p">DD/MM/YYYY hh:mm:ss AM/PM</option>
+      <option value="%m/%d/%Y %H:%M:%S %p">MM/DD/YYYY hh:mm:ss AM/PM</option>
+
+      
+
+
+
+    </select> 
+
+    <input type="hidden" name="file_path" value="{{file_path}}">
+    <input type="hidden" name="file_dict" value="{{dt_dict}}">
+    
+
+    <input type="submit" name="select_date" class="btn btn-success"  value="Extract Date">
+
+
+  </form>
+
+  {% endif %} 
+  <!-- Parent condition after block content -->
+
+
+  <br>
+
+  {% if dt_dict%}
+
+  {% if date_format %}
+  <!-- {{date_format}} -->
+
+  <form action="/fileCalculations/" method="post" id="systemform"> {% csrf_token %}
+
+    <input type="hidden" name="file_dict" value="{{dt_dict}}">
+    <button type="submit" class="btn btn-primary" name="file_path" value="{{file_path}}">Perform Action</button>
+
+  </form>
+
+  {%endif%}
+
+  <!-- <table class="table table-striped table-responsive-md btn-table"> -->
+    <table class="table table-sm">
+      <thead>
+        <tr>
+
+
+          <th scope="col">Column Names</th>
+          <th scope="col">Data Type</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- {{dt_dict}} -->
+        {% for k,v in dt_dict.items %}
+
+        <tr>
+          <form method="post">  {% csrf_token %}
+            <td>{{k}}</td>
+            <td>{{v}}</td>
+          </form>
+        </tr>
+
+
+        {% endfor %} 
+      </tbody>
+    </table>
+
+    {% endif %} 
+
+  </div>
+
+  {% endblock %}
+  <!-- accept=".xlsx, .csv, .xlsb" -->
+
+
