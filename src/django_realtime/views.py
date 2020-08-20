@@ -7,16 +7,14 @@ from django.contrib.auth.decorators import login_required
 import os
 from databasefiles.sqlalchemy_pymysql import dbActionReturn
 #from django.contrib.admin import login
-
-
 import datetime
+
 
 def home_page(request):
 
 	return render(request, "hello_world.html")
 
-#@login_required(login_url='/login/')
-# @login_required()
+@login_required()
 def upload(request):
 
 	context = {}
@@ -110,9 +108,8 @@ def upload(request):
 		return render(request,'file_upload.html', context)
 
 
-#@login_required(login_url='/admin/login/')
 
-# @login_required()
+@login_required()
 def dbAction(request):
 
 	context = {}
@@ -192,6 +189,7 @@ def dbAction(request):
 
 	return render(request,'fileCalculations.html', context)
 
+@login_required()
 def view_tables(request):
 
 	table_data = dbActionReturn()
@@ -201,7 +199,7 @@ def view_tables(request):
 	context = {'table':tables}
 	return render(request, 'show_tables.html', context)
 
-
+@login_required()
 def database_to_select(request):
 
 	context = {}
@@ -258,3 +256,7 @@ def database_to_select(request):
 	# tolocation  varchar(255),
 	# month  varchar(255), 
 	# PRIMARY KEY (id))
+
+
+
+	#@login_required(login_url='/admin/login/')

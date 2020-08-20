@@ -111,9 +111,11 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = 'home'
-LOGOUT_REDIRECT_URL = '/login/'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+# LOGIN_URL = '/admin/login/'
+# LOGIN_REDIRECT_URL = ''
+# LOGOUT_REDIRECT_URL = '/admin/'
 
 
 # Internationalization

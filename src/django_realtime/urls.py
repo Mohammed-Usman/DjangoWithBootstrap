@@ -17,22 +17,29 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.auth import views as auth_views
 from django.views.generic.base import TemplateView
+
 
 from .views import home_page, upload, dbAction, view_tables, database_to_select
 
 
 urlpatterns = [
+    
+    path('upload/', upload),
     path('admin/', admin.site.urls),
+    path('', home_page, name='home'),
+    
+    path('fileCalculations/', dbAction),
+    path('view-db/', database_to_select),
+    # path('view-db/', view_tables),
+    
+    path('accounts/', include('django.contrib.auth.urls')),
+    # path('accounts/login/', auth_views.LoginView.as_view()),
+    # path('accounts/logout/', auth_views.LogoutView.as_view()),
     
 
-    path('', home_page, name='home'),
-    path('upload/', upload),
-    path('fileCalculations/', dbAction),
-    # path('view-db/', view_tables),
-    path('view-db/', database_to_select),
-
-    path('', include('django.contrib.auth.urls')),
+    # path('', include('django.contrib.auth.urls')),
     #path('', TemplateView.as_view(template_name='hello_world.html'), name='home'),
     
 ]
