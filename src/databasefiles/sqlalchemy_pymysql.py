@@ -6,6 +6,7 @@ import re
 
 
 
+
 class dbActionReturn():
 
 	def __init__(self):
@@ -48,10 +49,19 @@ class dbActionReturn():
 				table_dict[str(tableName[0])] = column_dict
 		return table_dict
 
+	def table_columns(self, tableName):
+
+		
+		table_col_query = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '{}' AND TABLE_NAME = '{}'".format(self.dbname,tableName)
+
+		with self.sqlEngine.connect() as cr:
+			result = cr.execute(table_col_query)
+			columns_list = [i[0] for i in result]	
+		return columns_list
 
 	def create_table(self, connection, table_name, cols):
 
-		create_db_str = 'CREATE TABLE {} (id int NOT NULL AUTO_INCREMENT,{} PRIMARY KEY (id))'
+		create_db_str = 'CREATE TABLE {} (id int NOT NULL AUTO_INCREMENT,dbuploadername varchar(20),{} PRIMARY KEY (id))'
 		col_str = ''
 		col = [x.replace(' ','').lower() for x in cols]
 		col = [re.sub(r"[^A-Za-z]+", '', i) for i in col]
@@ -60,19 +70,32 @@ class dbActionReturn():
 			col_str = col_str + i + "  varchar(255), "
 
 		
-		create_query = create_db_str.format(table_name.capitalize(), col_str)
-		print(create_query)
+		create_query = create_db_str.format(table_name.lower(), col_str)
+		# print(create_query)
 
 		connection.execute(create_query)
 
+	def extra_columns(self,tableName, file_cols):
 
-	def populate_table(self,connection,tbl_name, file):
+		tbl_cols = self.table_columns(tableName)
+		print('TABLE COLUMNS')
+		print(tbl_cols)
+		print('FILE COLUMNS')
+		print(file_cols)
+		return [i for i in file_cols if i not in tbl_cols]
+
+		
+	def populate_table(self,connection,tbl_name, file, uploader_name):
 
 		file = file.applymap(str)
 		cols = file.columns
 		file.columns = [i.replace(' ','').lower() for i in cols]
 		file.columns = [re.sub(r"[^A-Za-z]+", '', i) for i in file.columns]
-		frame = file.to_sql(tbl_name, connection, index= False, if_exists='append')
+		file['dbuploadername'] = str(uploader_name).title()
+
+		file.drop(columns = self.extra_columns(tbl_name.lower(), list(file.columns)), inplace=True)
+
+		frame = file.to_sql(tbl_name.lower(), connection, index= False, if_exists='append')
 
 
 	def read_file(self, file_path):
@@ -90,13 +113,13 @@ class dbActionReturn():
 			file.columns = [re.sub(r"[^A-Za-z]+", '', i) for i in file.columns]
 			return file	
 
-	def insert_file(self, tbl_name, file_path):
+	def insert_file(self, tbl_name, file_path, uploader_name):
 
 		#print('Sql Alchemy',tbl_name, file_path)
 		connection = self.sqlEngine.connect()
 
 		file = self.read_file(file_path)
-		self.populate_table(connection,tbl_name, file)
+		self.populate_table(connection,tbl_name, file, uploader_name)
 
 		connection.close()
 
@@ -104,7 +127,7 @@ class dbActionReturn():
 		return returning_msg
 
 
-	def newTable(self, msg, file_path):
+	def newTable(self, msg, file_path, uploader_name):
 
 		table_name_list = self.tables()
 		table_name = [x[0].lower() for x in table_name_list]
@@ -131,7 +154,7 @@ class dbActionReturn():
 			cols = file.columns
 
 			self.create_table(connection, tbl_name, cols)
-			self.populate_table(connection,tbl_name, file)	
+			self.populate_table(connection,tbl_name, file, uploader_name)	
 
 		except Exception as e:
 
@@ -155,7 +178,7 @@ class dbActionReturn():
 		return str_month
 
 
-	def update_table(self, tbl_name, month_to_del,file_path):
+	def update_table(self, tbl_name, month_to_del,file_path, uploader_name):
 
 		table_name = tbl_name.capitalize()
 
@@ -167,7 +190,7 @@ class dbActionReturn():
 
 			file = self.read_file(file_path)
 
-			self.populate_table(connection, tbl_name, file)
+			self.populate_table(connection, tbl_name, file, uploader_name)
 
 		except Exception as e:
 
@@ -187,6 +210,7 @@ class dbActionReturn():
 
 	def add_month_col(self, file_path, date_col, date_format):
 
+		# file = file_df
 		file = self.read_file(file_path)
 		file['Month'] = pd.to_datetime(file[date_col], format=date_format).dt.strftime('%B')
 		file.columns = ['db'+i for i in file.columns]
@@ -234,7 +258,7 @@ class dbActionReturn():
 		dt = datetime.strptime(month_to_del, '%Y-%m')
 		str_month = dt.strftime('%B')
 
-		connection = self.sqlEngine.connect()
+		connection = self.sqlEngine.connect()	
 
 		query = "SELECT * FROM {} WHERE dbmonth = '{}'".format(table_name.lower(), str_month.capitalize())
 
@@ -243,6 +267,7 @@ class dbActionReturn():
 		tbl_data.columns = [col[2:] for col in tbl_data.columns]
 		tbl_data.columns = tbl_data.columns.str.capitalize()
 
+		tbl_data.replace('nan','',inplace=True)
 		tbl = tbl_data.to_html(classes=["table ","table-hover", "table-bordered", "table-info", "table-striped"],  table_id = "example2", show_dimensions=True,index=False, justify='center')
 
 		connection.close()

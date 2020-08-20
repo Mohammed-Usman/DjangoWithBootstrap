@@ -52,15 +52,21 @@ def upload(request):
 		db_obj = dbActionReturn()
 		file = db_obj.read_file(file_path)
 
+		# file = file.iloc[1:3,].applymap(str)
+		# dt = file.iloc[1,]
+		
 		dt = file.dtypes
-		dt = dt.replace('object','object')
-		dt = dt.replace('\n','')
+		# dt = dt.replace('object','object')
+		# dt = dt.replace('\n','')
 		
 		#context['frame'] = html
 		dt_dict = dt.to_dict()
 		context['dt_dict'] = dt_dict
 		context['file_path'] = file_path
 		context['file_name'] = file_name
+
+		# file = file.applymap(str)
+		# request.session['file_dataframe'] = file.to_json()
 		
 		return render(request,'file_upload.html', context)
 
@@ -73,7 +79,11 @@ def upload(request):
 		filepath 	= get_date.get('file_path')
 		filedict 	= get_date.get('file_dict')
 		
-		
+		# try:
+		# 	session_file_dataframe = request.session.get('file_dataframe')
+		# 	file_df = pd.read_json(session_file_dataframe)
+		# except:
+		# 	pass
 
 		query_data = dbActionReturn()
 		query_data.add_month_col(filepath, month_col, date_format)
@@ -136,16 +146,20 @@ def dbAction(request):
 
 		if '_newdb' in request.POST:
 
+			uploader_name = request.user
+
 			query_data = dbActionReturn()
 
 			login_data = request.POST.dict()
 			table_name = login_data.get('_newtable')
 			file_path = login_data.get('_file_path')
 
-			msg = query_data.newTable(table_name.lower(), file_path)
+			msg = query_data.newTable(table_name.lower(), file_path, uploader_name)
 			context['exists'] = str(msg)
 
 		if '_insert' in request.POST:
+
+			uploader_name = request.user
 
 			query_data = dbActionReturn()
 
@@ -154,10 +168,12 @@ def dbAction(request):
 			file_path = login_data.get('_file_path_insert')
 			
 			
-			msg = query_data.insert_file(table_name.capitalize(), file_path)
+			msg = query_data.insert_file(table_name.capitalize(), file_path, uploader_name)
 			context['exists'] = str(msg)
 
 		if '_update' in request.POST:
+
+			uploader_name = request.user
 
 			query_data = dbActionReturn()
 
@@ -167,7 +183,7 @@ def dbAction(request):
 			date_format = update_data.get('_select_month')
 			file_path = update_data.get('_file_path_update')
 			
-			msg = query_data.update_table(table_name, date_format,file_path)
+			msg = query_data.update_table(table_name, date_format,file_path, uploader_name)
 			context['exists'] = msg
 
 	query_data = dbActionReturn()
