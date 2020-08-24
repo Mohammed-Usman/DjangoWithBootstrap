@@ -78,10 +78,7 @@ class dbActionReturn():
 	def extra_columns(self,tableName, file_cols):
 
 		tbl_cols = self.table_columns(tableName)
-		print('TABLE COLUMNS')
-		print(tbl_cols)
-		print('FILE COLUMNS')
-		print(file_cols)
+
 		return [i for i in file_cols if i not in tbl_cols]
 
 		
@@ -94,9 +91,12 @@ class dbActionReturn():
 		file['dbuploadername'] = str(uploader_name).title()
 
 		file.drop(columns = self.extra_columns(tbl_name.lower(), list(file.columns)), inplace=True)
+		print(file.columns)
 
-		frame = file.to_sql(tbl_name.lower(), connection, index= False, if_exists='append')
-
+		if len(file.columns) < 3:
+			raise Exception('Database Columns Does Not Match')
+		else:
+			frame = file.to_sql(tbl_name.lower(), connection, index= False, if_exists='append')
 
 	def read_file(self, file_path):
 
@@ -116,15 +116,21 @@ class dbActionReturn():
 	def insert_file(self, tbl_name, file_path, uploader_name):
 
 		#print('Sql Alchemy',tbl_name, file_path)
-		connection = self.sqlEngine.connect()
 
-		file = self.read_file(file_path)
-		self.populate_table(connection,tbl_name, file, uploader_name)
+		try:
+			connection = self.sqlEngine.connect()
 
-		connection.close()
+			file = self.read_file(file_path)
+			self.populate_table(connection,tbl_name, file, uploader_name)
 
-		returning_msg = "'{}' named Database is populated".format(tbl_name)
-		return returning_msg
+			connection.close()
+
+			returning_msg = "'{}' named Database is populated".format(tbl_name)
+			return str(returning_msg)
+
+		except Exception as e:
+
+			return str(e)
 
 
 	def newTable(self, msg, file_path, uploader_name):
@@ -145,7 +151,7 @@ class dbActionReturn():
 
 		except Exception as e:
 
-			return e
+			return str(e)
 
 		try:
 
@@ -159,11 +165,11 @@ class dbActionReturn():
 		except Exception as e:
 
 			connection.close()
-			return e
+			return str(e)
 
 		
 		returning_msg = "'{}' named Database is created & populated".format(tbl_name)
-		return returning_msg
+		return str(returning_msg)
 
 
 	def del_before_update(self, connection, tbl_name, month_to_del):
@@ -227,6 +233,12 @@ class dbActionReturn():
 
 	def get_tables(self):
 
+
+		'''
+		Returns all database tables by limiting rows to 20    
+	
+
+		'''
 		table_name_list = self.tables()
 		table_names = [x[0].capitalize() for x in table_name_list]
 

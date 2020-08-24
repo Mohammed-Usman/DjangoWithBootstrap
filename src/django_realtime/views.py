@@ -9,7 +9,6 @@ from databasefiles.sqlalchemy_pymysql import dbActionReturn
 #from django.contrib.admin import login
 import datetime
 
-
 def home_page(request):
 
 	return render(request, "hello_world.html")
