@@ -21,7 +21,7 @@ from django.contrib.auth import views as auth_views
 from django.views.generic.base import TemplateView
 
 
-from .views import home_page, upload, dbAction, view_tables, database_to_select
+from .views import home_page, upload, dbAction, view_tables, database_to_select, show_data, search_form_with_table
 
 
 urlpatterns = [
@@ -33,6 +33,8 @@ urlpatterns = [
     path('fileCalculations/', dbAction),
     path('view-db/', database_to_select),
     # path('view-db/', view_tables),
+    path('search-table/',search_form_with_table),
+    path('view-data/',show_data),
     
     path('accounts/', include('django.contrib.auth.urls')),
     # path('accounts/login/', auth_views.LoginView.as_view()),
